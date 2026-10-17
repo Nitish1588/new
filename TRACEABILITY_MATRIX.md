@@ -1,0 +1,17 @@
+# Traceability Matrix
+
+This is a high-level map of confirmed implementation paths. Route-level and per-field completeness remains an open item; see [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md).
+
+| Feature | UI | API route | Controller/service | Database | Configuration | Tests |
+| --- | --- | --- | --- | --- | --- | --- |
+| User authentication | `web/pages/login.js`, registration/reset/verify pages | `/user/authentication/*` | User AuthenticationController → `UserAuthenticationService` | `users`, role/status, referrals, mints/counts/subscriptions | API local config, session config, website URL, SMTP/social credentials (currently mixed source/config) | No auth integration tests found. |
+| Admin access | `admin/pages/login.js`, admin layout | `/admin/authentication/*` | Admin AuthenticationController → `AdminAuthenticationService` | `admins`, role/status | Laminas DB session config | No auth integration tests found. |
+| Articles | `web/pages/articles/*`, `admin/pages/articles/*` | `/user/articles*`, `/admin/articles*`, nested subarticles | ArticlesController → ArticlesService → ArticlesTable/SubArticlesTable | `articles`, `sub_articles`, celebrity association, tracking | API base URL, image storage config | No owned feature tests found. |
+| Movies/celebs | `web/pages/movies/*`, `celebrities/*`; admin movie/celebrity pages | `/user/movies*`, `/user/celebs*`; corresponding `/admin/*` | Movies/Celebs controllers and services | `films`, `celebs`, film joins and lookups | S3/image path config | No owned feature tests found. |
+| Games | `web/pages/games/*`; admin `pages/games/*` | `/user/games/*`, `/admin/games/*` | Games/GameType controllers → GameTypeService and per-game scorers | `games`, details/questions/status, `mints_count`, `games_count`, ratings | game type/level/mints constants; image/S3 config | No game tests found. |
+| Legacy games | CodeIgniter `application/views/*` | CI route mappings to `Welcome` methods | `Welcome` / `AdminModel`; direct SQL in some handlers | Legacy game tables; shared DB unverified | CodeIgniter DB/session config | No application tests found. |
+| Commerce/rewards | `web/pages/{rewards,membership,subscriptions,transactions}` | `/user/products`, `/subscriptions`, `/transactions` | Products/Subscriptions/Transactions controllers/services | `products`, `subscriptions`, `transactions`, `token_settings`, `mints_count`, users | `qc_url`, commerce keys, token settings | No provider/integration tests found. |
+| Admin content | `admin/pages/*` by resource | `/admin/{resource}` routes | Resource controller → domain service → TableGateway | Resource-specific table and admin audit fields | Admin API base URL, S3 config | Only API skeleton route test exists. |
+| Contact/polls | `web/pages/contact-us.js`, poll/dashboard components; admin poll pages | `/user/contactus`, `/user/poll-week-questions*`, admin poll route | Contactus/Poll controllers and services | `contactus`, poll question/status | website/API config | No owned feature tests found. |
+
+**Control caveat:** the frontend only consumes routes; authorization, validation, scoring, storage location, and persistence must be changed/tested in backend code. The table list and schema confidence are documented in [DATABASE_SCHEMA.md](DATABASE_SCHEMA.md).
