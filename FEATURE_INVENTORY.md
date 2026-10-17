@@ -1,0 +1,19 @@
+# Feature Inventory
+
+Statuses describe source evidence, not production availability. **Implemented by code** means a route/UI/service path exists; runtime functionality is not confirmed.
+
+| Feature | Audience / UI | API and implementation | Data/config | Status |
+| --- | --- | --- | --- | --- |
+| Sign-in, registration, verification, social login | Public pages: `web/.../pages/{login,register,verify,forgotpassword,resetpassword}` | `/user/authentication/*`; `UserAuthenticationService`; Bcrypt, email and Google/Facebook paths | `users`, `role_types`, `status_types`, `referral_users`; local config and hardcoded integration values | UI/backend present; authentication guard/reset flow has critical risks; runtime UNVERIFIED. |
+| Admin sign-in and staff management | Admin login/admin pages | `/admin/authentication/*`, `/admin/admins`; `AdminAuthenticationService`, `AdminsService` | `admins`; roles in model/config | Present; session flow code exists, fine-grained permission helper is unused. |
+| Movies, celebrities, genres, banners | Web pages; admin create/edit/list pages | `/user/movies`, `/user/celebs`, `/user/banners`; corresponding `/admin/*`; domain services and table gateways | `films`, `celebs`, `banners`, film join tables and lookup tables | Implemented by code; full field/runtime contract UNVERIFIED. |
+| Articles and subarticles | Web article list/detail; admin nested article forms | `/user/articles`, `/admin/articles`, `/admin/articles/:article_id/subarticles`; `ArticlesService` | `articles`, `sub_articles`, `article_celeb_details`, tracking tables | Implemented by code; like/view behavior not runtime tested. |
+| Blogs and facts | Web blog/Do You Know pages; admin CRUD pages | `/user/blogs`, `/user/do-you-know`, admin CRUD; blog write handlers in user controller are commented | `blogs`, categories/tracking; `do_you_know` | Public reads/admin editing present; consumer/runtime status unverified. |
+| Games: Quiz, Crossword, Jumble, Hi5, MatchPoint, FillMe, MixedBag, Grid, PixFix | Web game category/list/play pages; admin forms for each game | `/user/games/...`; `GameTypeController`, `GameTypeService`, per-game services; admin game routes | `games`, game detail/question/status tables, `mints_count`, `games_count` | Implemented in API/UI. Scoring trust differs by game; Grid/MatchPoint client flags are a high-risk finding. |
+| Legacy gameplay | CodeIgniter PHP views and `Welcome` methods | CI routes to controller submit methods and legacy `AdminModel`; direct MySQLi in some handlers | Legacy tables/config; relation to API DB unknown | Implemented by source; likely legacy/overlapping; production use UNVERIFIED. |
+| Leaderboards/dashboard/polls | Web dashboard, poll pages; admin poll pages | User dashboard and poll actions, API services | game status/counts, poll question/status tables | Present by source; authorization/response and live data unverified. |
+| Rewards, memberships, redemption | Public rewards/membership/subscription/transactions pages | `/user/products`, `/user/subscriptions`, `/user/transactions`; `TransactionsService` integrates external catalog/order API | `products`, `subscriptions`, `transactions`, `token_settings`, `mints_count` | Integration implemented in code; external provider and payment lifecycle unverified. |
+| Uploads and images | Admin/public forms and account image UI | `/admin/uploads/image`, `/user/uploads/image`, account save-image; S3 utility | image path metadata and S3 config | Present; MIME/size/access policy needs runtime/security verification. |
+| Contact and metadata | Public contact, SEO page usage; admin metadata pages | `/user/contactus`, `/user/metatags`, `/admin/metatags` | `contactus`, `meta_tags` | Present by code; delivery/SEO rendering runtime unverified. |
+
+Feature source-of-control and cross-layer links are expanded in [TRACEABILITY_MATRIX.md](TRACEABILITY_MATRIX.md). No queue/cron implementation was confirmed in this pass.

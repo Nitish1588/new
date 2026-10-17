@@ -83,9 +83,9 @@ The route config contains broad optional action segments. The handler's method n
 
 `POST /user/games/{game_type}/{id}/submit`; game-specific payloads vary. For example, service code consumes question answers or grid characters and optional duration; scoring is performed in API services and updates status/mints tables. Do not trust client score/mints fields unless independently validated by each service. Full per-game schema is in the corresponding `Application/Service/Games/*Service.php`.
 
-### Password Reset Contract Concern
+### Password Reset Contract
 
-The public web wrapper posts a bare `password` value to `/authentication/{id}/createpassword`, but the service expects parsed data with a `password` key. The public endpoint guard and reset token design also need correction/verification. Treat the UI call as a likely contract mismatch, not a verified successful flow.
+The current reset page passes `{ password: { password: "..." } }` to `AuthApi.resetpassword`; the wrapper POSTs that object, which matches the service's expected `password` key when parsed as JSON. The confirmed concern is not the body shape: the email link and endpoint use a user ID as the reset credential instead of a single-use expiring token. Replace that credential flow as described in [SECURITY_AUDIT.md](SECURITY_AUDIT.md).
 
 ## Consumer Comparison and Mismatches
 
